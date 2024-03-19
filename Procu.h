@@ -13,6 +13,7 @@
 #include <cppconn/prepared_statement.h>
 
 using namespace std;
+using namespace sql;
 
 int newnodrug;
 
@@ -25,26 +26,26 @@ void checkpoint()
     cout << "\t\t\n\nThe system will now load the drugs from the database. Please be patient...";
     system("cls");
 
-    sql::Driver* driver;
-    sql::Connection* con;
+    Driver* driver;
+    Connection* con;
     driver = get_driver_instance();
     // here change your username and password as intended
-    con = driver->connect("tcp://127.0.0.1:3306", "root", "MatoborIvy33");
+    con = driver->connect("tcp://127.0.0.1:3306", "root", "LastDance23!");
 
-    con->setSchema("druginventory");
+    con->setSchema("Drug_Inventory");
 
-    sql::Statement* stmt;
+    Statement* stmt;
     stmt = con->createStatement();
 
-    sql::ResultSet* res;
-    res = stmt->executeQuery("SELECT * FROM drugsavailable");
+    ResultSet* res;
+    res = stmt->executeQuery("SELECT * FROM drug_table");
 
     while (res->next()) {
-        int NO_ = res->getInt(1);
-        int quantity = res->getInt(2);
-        string drugname = res->getString(3);
-        string drugbrand = res->getString(4);
-        cout << "\t\t " << NO_ << "\t\t" << quantity << " \t\t" << drugname << " \t\t " << drugbrand << endl;
+        int ID = res->getInt(1);
+        int Quantity = res->getInt(2);
+        string Drugname = res->getString(3);
+        string Brand = res->getString(4);
+        cout << "\t\t " << ID << "\t\t" << Quantity << " \t\t" << Drugname << " \t\t " << Brand << endl;
 
     }
     cout << "What would you like to perform?\n\n\t 1.Restock on drugs\n\n\t 2. Remove specific drug\n\n\t\t";
@@ -58,7 +59,7 @@ void checkpoint()
         Sleep(1000);
        
 
-        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM drugsavailable WHERE NO_ = " + std::to_string(newnodrug));
+        sql::ResultSet* res = stmt->executeQuery("SELECT * FROM drug_table WHERE ID = " + std::to_string(newnodrug));
         if (!res->next()) {
             cout << "Drug not found." << endl;
             delete res;
@@ -71,7 +72,7 @@ void checkpoint()
 
         // Prepare a statement to update the quantity column in the table
         sql::PreparedStatement* pstmt;
-        pstmt = con->prepareStatement("UPDATE drugsavailable SET quantity = quantity + ? WHERE NO_ = ?");
+        pstmt = con->prepareStatement("UPDATE drug_table SET Quantity = Quantity + ? WHERE ID = ?");
         pstmt->setInt(1, newnumber);
         pstmt->setInt(2, newnodrug);
 
@@ -85,10 +86,7 @@ void checkpoint()
         Sleep(1000);
 
         break;
-    case 2:
-        // you can write here something else you want to be performed
-
-        break;
+  
 
     }
 }

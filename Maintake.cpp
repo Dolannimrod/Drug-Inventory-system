@@ -16,7 +16,7 @@ using namespace std;
 
 string drugname, drugbrand;
 
-int quantity, availableno, buyingno, newnum, availabledrug, NO_;
+int quantity, availableno, buyingno, newnum, availabledrug, ID;
 
 
 
@@ -25,8 +25,8 @@ int main()
 {
 
     // here I initialize connection with mySQL
-    sql::mysql::MySQL_Driver* driver;
-    sql::Connection* con;
+    mysql::MySQL_Driver* driver;
+    Connection* con;
 
     system("cls");
     //Here I will introduce the page and let the user selt their option
@@ -55,26 +55,26 @@ int main()
         // this part of the code is dedicated to connecting to the mySQL table and displaying the table contents
         try
         {
-            sql::Driver* driver;
-            sql::Connection* con;
+            Driver* driver;
+            Connection* con;
             driver = get_driver_instance();
             // here change your username and password as intended
-            con = driver->connect("tcp://127.0.0.1:3306", "root", "MatoborIvy33");
+            con = driver->connect("tcp://127.0.0.1:3306", "root", "LastDance23!");
 
-            con->setSchema("druginventory");
+            con->setSchema("Drug_Inventory");
 
-            sql::Statement* stmt;
+            Statement* stmt;
             stmt = con->createStatement();
 
-            sql::ResultSet* res;
-            res = stmt->executeQuery("SELECT * FROM drugsavailable");
+            ResultSet* res;
+            res = stmt->executeQuery("SELECT * FROM drug_table");
 
             while (res->next()) {
-                int NO_ = res->getInt(1);
-                int quantity = res->getInt(2);
-                string drugname = res->getString(3);
-                string drugbrand = res->getString(4);
-                cout << "\t\t "<<NO_<<"\t\t" << quantity << " \t\t" << drugname << " \t\t " << drugbrand << endl;
+                int ID = res->getInt(1);
+                int Quantity = res->getInt(2);
+                string Drugname = res->getString(3);
+                string Brand = res->getString(4);
+                cout << "\t\t "<< ID <<"\t\t" << Quantity << " \t\t" << Drugname << " \t\t " << Brand << endl;
             }
             //Here is the selection prompt which can be made easier by just selection but we use input prompt
             cout << "\t\t\n\n Do you want to sell a specific drug?\n\n\t\t Enter the number of the drug:";
@@ -83,7 +83,7 @@ int main()
             cin >> availabledrug;
 
             // Get the current quantity of the selected drug
-            res = stmt->executeQuery("SELECT quantity FROM drugsavailable WHERE NO_ = " + std::to_string(availabledrug));
+            res = stmt->executeQuery("SELECT Quantity FROM drug_table WHERE ID = " + std::to_string(availabledrug));
             int currentQuantity = 0;
             if (res->next()) {
                 currentQuantity = res->getInt(1);
@@ -114,8 +114,8 @@ int main()
                 currentQuantity -= buyingno;
 
                 // Update the quantity column in the database
-                sql::PreparedStatement* pstmt;
-                pstmt = con->prepareStatement("UPDATE drugsavailable SET quantity = ? WHERE NO_ = ?");
+                PreparedStatement* pstmt;
+                pstmt = con->prepareStatement("UPDATE drug_table SET Quantity = ? WHERE ID = ?");
                 pstmt->setInt(1, currentQuantity);
                 pstmt->setInt(2, availabledrug);
                 pstmt->executeUpdate();
@@ -126,15 +126,15 @@ int main()
                 Sleep(5000);
 
                 // Display updated table
-                res = stmt->executeQuery("SELECT * FROM drugsavailable");
+                res = stmt->executeQuery("SELECT * FROM drug_table");
                 cout << "\n\n Updated Table:\n\n";
                 cout << "\t\t NO_\t\t Quantity\t\t Drug Name\t\t Drug Brand\n";
                 while (res->next()) {
-                    int NO_ = res->getInt(1);
-                    int quantity = res->getInt(2);
-                    string drugname = res->getString(3);
-                    string drugbrand = res->getString(4);
-                    cout << "\t\t " << NO_ << "\t\t" << quantity << " \t\t" << drugname << " \t\t " << drugbrand << endl;
+                    int ID = res->getInt(1);
+                    int Quantity = res->getInt(2);
+                    string Drugname = res->getString(3);
+                    string Brand = res->getString(4);
+                    cout << "\t\t " << ID << "\t\t" << Quantity << " \t\t" << Drugname << " \t\t " << Brand << endl;
                 }
             }
             else {
@@ -159,9 +159,9 @@ int main()
       cout<<"\n\n\t\t Are you in procument? ";
       string procpage;
       cin>> procpage;
-      if (procpage == "yes" || procpage == "Y" || procpage == "YES"|| procpage=="Yes") {
+      if (procpage == "yes" || procpage == "Y" || procpage == "YES"|| procpage=="Yes") 
         checkpoint();
-      }
+      
       else {
           cout << "Invalid choice!! Kindly reload the page";
       }
